@@ -8,6 +8,9 @@ import SaleForm from '../pages/saleForm.jsx';
 import Reports from '../pages/reports.jsx';
 import PrivateRoute from '../components/PrivateRoute.jsx';
 import Layout from '../components/layout/Layout';
+import CashFlowList from '../pages/cashFlowList.jsx';
+import CashFlowForm from '../pages/cashFlowForm.jsx';
+
 
 export default function AppRoutes() {
   return (
@@ -26,6 +29,8 @@ export default function AppRoutes() {
           <Route path="sales" element={<SalesList />} />
           <Route path="sales/new" element={<SaleForm />} />
           <Route path="sales/:id" element={<SaleForm />} />
+          <Route path="cashflow" element={<CashFlowList />} />
+          <Route path="cashflow/new" element={<CashFlowForm />} />
         </Route>
       </Route>
 
