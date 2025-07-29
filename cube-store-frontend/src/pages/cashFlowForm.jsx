@@ -1,103 +1,121 @@
-import { useState } from 'react';
+import { useState } from "react";
+import api from "../services/api";
+import { Button } from "../components/ui/Button";
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { Button } from '../components/ui/Button';
 
-export default function CashFlowForm() {
-  const navigate = useNavigate();
+export default function CashFlowForm({ onSuccess }) {
   const [form, setForm] = useState({
-    type: 'ingreso',
-    category: '',
-    description: '',
-    amount: ''
+    type: "ingreso",
+    category: "",
+    description: "",
+    amount: ""
   });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({
-      ...prev,
-      [name]: name === 'amount' ? parseFloat(value) || '' : value
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.category || !form.amount) {
-      return setError('Completa categoría y monto');
-    }
-
+    setLoading(true);
+    setError(null);
     try {
-      await api.post('/cashflow', form);
-      navigate('/cashflow');
-    // eslint-disable-next-line no-unused-vars
+      const { type, category, description, amount } = form;
+      await api.post("/cashflow", {
+        type,
+        category,
+        description,
+        amount: parseFloat(amount)
+      });
+      setForm({ type: "ingreso", category: "", description: "", amount: "" });
+      if (onSuccess) onSuccess(); // Recargar lista si se pasa función
     } catch (err) {
-      setError('Error al guardar movimiento');
+      setError("Error al registrar el flujo.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Nuevo Movimiento</h1>
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-4 rounded shadow-md space-y-4"
+    >
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold">Registrar movimiento</h2>
+          <Button variant="secondary" onClick={() => navigate('/cashflow')}>
+            Volver
+          </Button>
+        </div>
+        <p className="text-gray-600">Complete el formulario para registrar un nuevo movimiento.</p>
+        <div className="border-b border-gray-300 mb-4"></div>
+      </div>
 
-      {error && <p className="text-red-600">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-1 font-medium">Tipo</label>
-          <select
+      {error && <p className="text-red-500">{error}</p>}
+
+      <div className="flex gap-4">
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
             name="type"
-            value={form.type}
+            value="ingreso"
+            checked={form.type === "ingreso"}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="ingreso">Ingreso</option>
-            <option value="egreso">Egreso</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Categoría</label>
-          <input
-            type="text"
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="Ej: Ventas, Alquiler, Compras"
           />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Descripción (opcional)</label>
+          Ingreso
+        </label>
+        <label className="flex items-center gap-2">
           <input
-            type="text"
-            name="description"
-            value={form.description}
+            type="radio"
+            name="type"
+            value="egreso"
+            checked={form.type === "egreso"}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="Detalle adicional"
           />
-        </div>
+          Egreso
+        </label>
+      </div>
 
-        <div>
-          <label className="block mb-1 font-medium">Monto</label>
-          <input
-            type="number"
-            name="amount"
-            value={form.amount}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            placeholder="Ej: 1000.00"
-            step="0.01"
-            min="0"
-          />
-        </div>
+      <input
+        type="text"
+        name="category"
+        placeholder="Categoría"
+        value={form.category}
+        onChange={handleChange}
+        className="border rounded px-3 py-2 w-full"
+        required
+      />
 
-        <Button type="submit" variant="primary">
-          Guardar
-        </Button>
-      </form>
-    </div>
+      <input
+        type="text"
+        name="description"
+        placeholder="Descripción (opcional)"
+        value={form.description}
+        onChange={handleChange}
+        className="border rounded px-3 py-2 w-full"
+      />
+
+      <input
+        type="number"
+        name="amount"
+        placeholder="Monto"
+        value={form.amount}
+        onChange={handleChange}
+        className="border rounded px-3 py-2 w-full"
+        step="0.01"
+        min="0"
+        required
+      />
+
+      <Button type="submit" disabled={loading}>
+        {loading ? "Guardando..." : "Guardar"}
+      </Button>
+    </form>
   );
 }
