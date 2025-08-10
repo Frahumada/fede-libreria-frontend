@@ -31,6 +31,8 @@ export default function AppRoutes() {
           <Route path="sales/:id" element={<SaleForm />} />
           <Route path="cashflow" element={<CashFlowList />} />
           <Route path="cashflow/new" element={<CashFlowForm />} />
+          <Route path="cashflow/:id" element={<CashFlowForm />} />
+
         </Route>
       </Route>
 

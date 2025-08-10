@@ -50,7 +50,6 @@ export default function ProductList() {
               <td className="px-4 py-2">{p.stock}</td>
               <td className="px-4 py-2 space-x-2">
                 <Link to={`/products/${p._id}`} className="text-blue-500">Editar</Link>
-                <Link to={`/products/${p._id}`} className="text-blue-500">Editar</Link>
                 <Link to={`/products/${p._id}/details`} className="text-green-500">Detalles</Link>
                 <button className="text-red-500" onClick={() => handleDelete(p._id)}>Borrar</button>
               </td>

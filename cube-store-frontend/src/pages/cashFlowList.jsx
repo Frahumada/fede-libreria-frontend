@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import { Button } from '../components/ui/Button';
+import CashSessionPanel from './cashSessionPanel';
 
 export default function CashFlowList() {
   const [flows, setFlows] = useState([]);
@@ -38,6 +39,9 @@ export default function CashFlowList() {
         <h1 className="text-2xl font-bold">Flujo de Caja</h1>
         <Button to="/cashflow/new" variant="primary">Nuevo Movimiento</Button>
       </div>
+
+      {/* Panel de apertura/cierre de caja */}
+      <CashSessionPanel />
 
       {/* Totales */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white p-4 rounded shadow">
@@ -94,5 +98,6 @@ export default function CashFlowList() {
         </table>
       )}
     </div>
+    
   );
 }
